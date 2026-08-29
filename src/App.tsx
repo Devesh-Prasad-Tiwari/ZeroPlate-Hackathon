@@ -287,6 +287,7 @@ const MainLayout: React.FC = () => {
       <Navbar
         onToggleSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
         activeView={activeTab}
+        onNavigateHome={() => setActiveTab('dashboard')}
       />
 
       <div className="flex-1 flex max-w-7xl w-full mx-auto">

@@ -141,7 +141,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                       onSelectTab(item.id);
                       if (onCloseMobile) onCloseMobile();
                     }}
-                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-extrabold text-sm transition-all ${
+                    className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer ${
                       isActive
                         ? 'bg-brand-orange text-white shadow-warm-sm'
                         : 'text-gray-500 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-brand-orange dark:hover:text-orange-400'
@@ -173,7 +173,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                               onSelectTab(sub.id);
                               if (onCloseMobile) onCloseMobile();
                             }}
-                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all ${
+                            className={`w-full flex items-center gap-2.5 px-3 py-1.5 rounded-lg text-xs font-bold transition-all cursor-pointer ${
                               isSubActive
                                 ? 'text-brand-orange dark:text-orange-400 bg-orange-50 dark:bg-orange-950/40 font-black'
                                 : 'text-brand-muted dark:text-slate-400 hover:text-brand-text dark:hover:text-slate-200'
@@ -206,7 +206,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     onSelectTab(item.id);
                     if (onCloseMobile) onCloseMobile();
                   }}
-                  className={`w-full flex items-center gap-3 px-3.5 py-2 rounded-xl font-bold text-xs transition-all ${
+                  className={`w-full flex items-center gap-3 px-3.5 py-2.5 rounded-xl font-extrabold text-sm transition-all cursor-pointer ${
                     isActive
                       ? 'bg-brand-orange text-white shadow-warm-sm'
                       : 'text-gray-500 dark:text-slate-400 hover:bg-orange-50 dark:hover:bg-slate-800 hover:text-brand-orange dark:hover:text-orange-400'
@@ -220,23 +220,23 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </nav>
         </div>
 
-        {/* User profile summary & logout */}
-        <div className="p-4 border-t border-orange-100 dark:border-slate-800 space-y-2">
-          <div className="px-2 py-1 flex items-center gap-2 text-xs">
-            <div className="w-7 h-7 rounded-full bg-brand-light dark:bg-orange-950/60 text-brand-deep dark:text-orange-400 font-bold flex items-center justify-center border border-orange-200 dark:border-orange-800/60">
-              {user?.name ? user.name.charAt(0) : 'U'}
+        {/* User Footer Profile & Signout */}
+        <div className="p-4 border-t border-gray-100 dark:border-slate-800 space-y-3">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-full bg-brand-light dark:bg-orange-950/60 border border-orange-200 dark:border-orange-900 text-brand-orange flex items-center justify-center font-black text-sm shrink-0">
+              {user?.name?.charAt(0) || 'U'}
             </div>
             <div className="min-w-0 flex-1">
-              <p className="font-bold text-gray-800 dark:text-slate-100 truncate">{user?.name}</p>
-              <p className="text-[10px] text-gray-500 dark:text-slate-400 capitalize">{isDonor ? user?.donorType || t('donorView') : t('ngoView')}</p>
+              <p className="text-xs font-black text-brand-text dark:text-white truncate">{user?.name}</p>
+              <p className="text-[10px] text-brand-muted dark:text-slate-400 truncate">{user?.email}</p>
             </div>
           </div>
 
           <button
             onClick={logout}
-            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl font-bold text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/30 transition-all cursor-pointer"
+            className="w-full flex items-center justify-center gap-2 py-2 px-3 bg-red-50 dark:bg-red-950/40 hover:bg-red-100 dark:hover:bg-red-900/60 text-red-600 dark:text-red-400 font-extrabold text-xs rounded-xl transition-all cursor-pointer"
           >
-            <LogOut className="w-4 h-4" />
+            <LogOut className="w-3.5 h-3.5" />
             <span>{t('signOut')}</span>
           </button>
         </div>

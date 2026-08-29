@@ -179,6 +179,33 @@
   ],
   "donations": [
     {
+      "donorId": "donor_spicevilla",
+      "donorName": "SpiceVilla Restaurant",
+      "donorType": "Restaurant",
+      "foodName": "chapati",
+      "foodCategory": "Main Course",
+      "category": "Main Course",
+      "foodSpecifications": [
+        "Rice + Dal"
+      ],
+      "foodType": "veg",
+      "mealCount": 50,
+      "quantity": "5",
+      "description": "Fresh surplus food ready for NGO rescue.",
+      "imageUrl": "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&auto=format&fit=crop&q=80",
+      "latitude": 19.076,
+      "longitude": 72.8777,
+      "pickupLocation": "Bandra West, Mumbai",
+      "pickupAddress": "Bandra West, Mumbai",
+      "availableFrom": "2026-08-29T00:14:16.712Z",
+      "pickupDeadline": "2026-08-29T00:43:00.000Z",
+      "packagingAvailable": true,
+      "id": "don_1787962456716_912",
+      "status": "AVAILABLE",
+      "pendingRequestsCount": 0,
+      "createdAt": "2026-08-29T00:14:16.716Z"
+    },
+    {
       "donorId": "user_1787954502070_257",
       "donorName": "TONY STARK",
       "donorType": "Household",
@@ -669,11 +696,11 @@
         "Rice + Dal",
         "Biryani"
       ],
-      "foodType": "non-veg",
+      "foodType": "veg",
       "urgency": "high",
-      "requiredBy": "2026-08-29T06:07:14.211Z",
+      "requiredBy": "2026-08-29T06:22:08.820Z",
       "maximumRadius": 15,
-      "specificRequirement": "Est. weight: 90 kg",
+      "specificRequirement": "Est. weight: 100 kg",
       "status": "ACTIVE",
       "createdAt": "2026-08-29T00:05:54.233Z"
     }
