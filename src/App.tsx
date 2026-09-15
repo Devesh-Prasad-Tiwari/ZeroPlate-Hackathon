@@ -230,7 +230,7 @@ const MainLayout: React.FC = () => {
         return <DeliveriesPage onShowToast={showToast} />;
 
       case 'bookings':
-        return <BookingsPage onShowToast={showToast} />;
+        return <BookingsPage onShowToast={showToast} onNavigate={handleNavigate} />;
 
       case 'messages':
         return <MessagesPage />;

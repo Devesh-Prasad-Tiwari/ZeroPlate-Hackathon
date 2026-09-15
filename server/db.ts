@@ -130,39 +130,7 @@ const initialSeedData: DBData = {
       createdAt: new Date().toISOString(),
     },
   ],
-  donations: [
-    {
-      id: 'don_biryani',
-      donorId: 'donor_spicevilla',
-      donorName: 'SpiceVilla Restaurant',
-      donorType: 'Restaurant',
-      foodName: 'Veg Hyderabadi Biryani',
-      foodCategory: 'Main Course',
-      category: 'Main Course',
-      foodSpecifications: ['Rice', 'Dal', 'Rice + Dal', 'Biryani'],
-      foodType: 'veg',
-      mealCount: 80,
-      quantity: '40 kg',
-      description: 'Freshly prepared aromatic vegetarian biryani with raita. Packed in food-grade containers.',
-      packagingStatus: 'Already packed',
-      imageUrl: 'https://images.unsplash.com/photo-1563379091339-03b21ab4a4f8?w=600&auto=format&fit=crop&q=80',
-      latitude: 19.076,
-      longitude: 72.8777,
-      pickupLocation: 'SpiceVilla Restaurant, Bandra West',
-      pickupAddress: 'Shop 4, Hill Road, Bandra West, Mumbai 400050',
-      originAddress: 'Shop 4, Hill Road, Bandra West, Mumbai 400050',
-      originLatitude: 19.076,
-      originLongitude: 72.8777,
-      availableFrom: new Date(Date.now() - 30 * 60 * 1000).toISOString(),
-      pickupDeadline: new Date(Date.now() + 4 * 60 * 60 * 1000).toISOString(),
-      status: 'AVAILABLE',
-      prepTime: 'Freshly prepared 1 hour ago',
-      packagingAvailable: true,
-      additionalNotes: 'Ready at kitchen loading dock.',
-      pendingRequestsCount: 0,
-      createdAt: new Date().toISOString(),
-    },
-  ],
+  donations: [],
   requests: [],
   bookings: [],
   deliveryPersons: [
@@ -202,15 +170,24 @@ class Database {
     this.data = this.load();
   }
 
+  private getDbPath(): string {
+    const tmpFile = path.join('/tmp', 'zeroplate_db.json');
+    if (fs.existsSync(tmpFile)) {
+      return tmpFile;
+    }
+    return DB_FILE;
+  }
+
   private load(): DBData {
     try {
-      if (fs.existsSync(DB_FILE)) {
-        const raw = fs.readFileSync(DB_FILE, 'utf-8');
+      const dbPath = this.getDbPath();
+      if (fs.existsSync(dbPath)) {
+        const raw = fs.readFileSync(dbPath, 'utf-8');
         const parsed = JSON.parse(raw);
         if (!parsed.donors) parsed.donors = initialSeedData.donors || [];
         if (!parsed.ngos) parsed.ngos = initialSeedData.ngos || [];
         if (!parsed.users) parsed.users = initialSeedData.users || [];
-        if (!parsed.donations) parsed.donations = initialSeedData.donations || [];
+        if (!parsed.donations) parsed.donations = [];
         if (!parsed.deliveryPersons) parsed.deliveryPersons = initialSeedData.deliveryPersons || [];
         if (!parsed.requests) parsed.requests = [];
         if (!parsed.bookings) parsed.bookings = [];
@@ -229,8 +206,23 @@ class Database {
   }
 
   private save(data: DBData) {
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    this.data = data;
+    const tmpFile = path.join('/tmp', 'zeroplate_db.json');
+    try {
+      if (process.env.VERCEL) {
+        fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf-8');
+        return;
+      }
+      fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    } catch (e) {
+      try {
+        fs.writeFileSync(tmpFile, JSON.stringify(data, null, 2), 'utf-8');
+      } catch (err) {
+        console.warn('Could not save DB to disk in serverless container:', err);
+      }
+    }
   }
+
 
   public getStore(): DBData {
     return this.data;

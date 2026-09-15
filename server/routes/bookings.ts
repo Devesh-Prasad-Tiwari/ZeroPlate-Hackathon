@@ -8,17 +8,129 @@ router.get('/', (req, res) => {
   const { userId, role } = req.query;
   const store = db.getStore();
 
-  let userBookings = store.bookings;
+  let userBookings: any[] = [];
 
   if (userId) {
     if (role === 'donor') {
-      userBookings = userBookings.filter((b) => b.donorId === userId);
+      const donorBookings = store.bookings.filter((b) => b.donorId === userId);
+
+      const pendingRequests = store.requests
+        .filter((r) => r.donorId === userId && r.status === 'PENDING')
+        .map((r) => {
+          const donation = store.donations.find((d) => d.id === r.donationId);
+          return {
+            id: r.id,
+            isRequest: true,
+            requestId: r.id,
+            donationId: r.donationId,
+            ngoId: r.ngoId,
+            ngoName: r.ngoName,
+            donorId: r.donorId,
+            donorName: r.donorName,
+            foodName: r.foodName,
+            mealCount: r.requestedMeals,
+            foodType: donation?.foodType,
+            pickupLocation: donation?.pickupLocation || donation?.pickupAddress || 'Pickup Location',
+            pickupAddress: donation?.pickupAddress || donation?.pickupLocation || '',
+            status: 'REQUESTED',
+            matchScore: r.matchScore,
+            createdAt: r.requestedAt,
+            notes: r.notes,
+          };
+        });
+
+      const rejectedRequests = store.requests
+        .filter((r) => r.donorId === userId && (r.status === 'REJECTED' || r.status === 'CANCELLED'))
+        .map((r) => {
+          const donation = store.donations.find((d) => d.id === r.donationId);
+          return {
+            id: r.id,
+            isRequest: true,
+            requestId: r.id,
+            donationId: r.donationId,
+            ngoId: r.ngoId,
+            ngoName: r.ngoName,
+            donorId: r.donorId,
+            donorName: r.donorName,
+            foodName: r.foodName,
+            mealCount: r.requestedMeals,
+            foodType: donation?.foodType,
+            pickupLocation: donation?.pickupLocation || donation?.pickupAddress || 'Pickup Location',
+            pickupAddress: donation?.pickupAddress || donation?.pickupLocation || '',
+            status: r.status === 'REJECTED' ? 'REJECTED' : 'CANCELLED',
+            matchScore: r.matchScore,
+            createdAt: r.requestedAt,
+            notes: r.notes,
+          };
+        });
+
+      userBookings = [...donorBookings, ...pendingRequests, ...rejectedRequests];
     } else if (role === 'ngo') {
-      userBookings = userBookings.filter((b) => b.ngoId === userId);
+      const ngoBookings = store.bookings.filter((b) => b.ngoId === userId);
+      const ngoRequests = store.requests
+        .filter((r) => r.ngoId === userId && r.status === 'PENDING')
+        .map((r) => {
+          const donation = store.donations.find((d) => d.id === r.donationId);
+          return {
+            id: r.id,
+            isRequest: true,
+            requestId: r.id,
+            donationId: r.donationId,
+            ngoId: r.ngoId,
+            ngoName: r.ngoName,
+            donorId: r.donorId,
+            donorName: r.donorName,
+            foodName: r.foodName,
+            mealCount: r.requestedMeals,
+            foodType: donation?.foodType,
+            pickupLocation: donation?.pickupLocation || donation?.pickupAddress || 'Pickup Location',
+            pickupAddress: donation?.pickupAddress || donation?.pickupLocation || '',
+            status: 'REQUESTED',
+            matchScore: r.matchScore,
+            createdAt: r.requestedAt,
+            notes: r.notes,
+          };
+        });
+
+      const ngoInactiveRequests = store.requests
+        .filter((r) => r.ngoId === userId && (r.status === 'REJECTED' || r.status === 'CANCELLED'))
+        .map((r) => {
+          const donation = store.donations.find((d) => d.id === r.donationId);
+          return {
+            id: r.id,
+            isRequest: true,
+            requestId: r.id,
+            donationId: r.donationId,
+            ngoId: r.ngoId,
+            ngoName: r.ngoName,
+            donorId: r.donorId,
+            donorName: r.donorName,
+            foodName: r.foodName,
+            mealCount: r.requestedMeals,
+            foodType: donation?.foodType,
+            pickupLocation: donation?.pickupLocation || donation?.pickupAddress || 'Pickup Location',
+            pickupAddress: donation?.pickupAddress || donation?.pickupLocation || '',
+            status: r.status === 'REJECTED' ? 'REJECTED' : 'CANCELLED',
+            matchScore: r.matchScore,
+            createdAt: r.requestedAt,
+            notes: r.notes,
+          };
+        });
+
+      userBookings = [...ngoBookings, ...ngoRequests, ...ngoInactiveRequests];
     } else {
-      userBookings = userBookings.filter((b) => b.donorId === userId || b.ngoId === userId);
+      userBookings = store.bookings.filter((b) => b.donorId === userId || b.ngoId === userId);
     }
+  } else {
+    userBookings = store.bookings;
   }
+
+  // Deduplicate requests that have already become bookings
+  const bookingRequestIds = new Set(userBookings.filter((b) => !b.isRequest && b.requestId).map((b) => b.requestId));
+  userBookings = userBookings.filter((b) => !b.isRequest || !bookingRequestIds.has(b.requestId));
+
+  // Sort newest first
+  userBookings.sort((a, b) => new Date(b.createdAt || 0).getTime() - new Date(a.createdAt || 0).getTime());
 
   return res.json(userBookings);
 });
